@@ -62,6 +62,6 @@ class Auth():
 
     def current_user(self, request=None) -> TypeVar('User'):
         """This function takes a request object as an optional argument
-        (defaults to None) 
+        (defaults to None)
         """
         return None
