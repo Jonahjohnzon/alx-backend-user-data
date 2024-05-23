@@ -13,14 +13,19 @@ class SessionDBAuth(SessionExpAuth):
     """
 
     def create_session(self, user_id: str) -> str:
-        """Creates and stores a session id for the user.
+        """Creates and stores session id for the user.
+
+        Args:
+            user_id (str): User id to be associated with the session.
+
+        Returns:
+            str: Session id.
         """
         # Call the parent method to create a session id
         session_id = super().create_session(user_id)
 
-        # Check if  session id is returned
+        # Check if a session id is returned
         if isinstance(session_id, str):
-            # Create a new UserSession instance and store it
             kwargs = {
                 'user_id': user_id,
                 'session_id': session_id,
@@ -30,7 +35,13 @@ class SessionDBAuth(SessionExpAuth):
             return session_id
 
     def user_id_for_session_id(self, session_id: str) -> str:
-        """Retrieves user id of user associated with given session id.
+        """Retrieves the user id of user associated with given session id.
+
+        Args:
+            session_id (str): Session id.
+
+        Returns:
+            str: User id associated with the session id.
         """
         try:
             # Try to retrieve the UserSession instance from the database
@@ -53,8 +64,14 @@ class SessionDBAuth(SessionExpAuth):
 
     def destroy_session(self, request=None) -> bool:
         """Destroys an authenticated session.
+
+        Args:
+            request (Request): Request object.
+
+        Returns:
+            bool: Indicates if session was destroyed successfully.
         """
-        # Get  session id from the request cookie
+        # Get the session id from the request cookie
         session_id = self.session_cookie(request)
         try:
             # Try to retrieve the UserSession instance from the database
@@ -63,7 +80,7 @@ class SessionDBAuth(SessionExpAuth):
             # Return False in case of an error
             return False
         if len(sessions) <= 0:
-            # Return False if session id is not found
+            # Return False if the session id is not found
             return False
         # Remove the UserSession instance from the database
         sessions[0].remove()

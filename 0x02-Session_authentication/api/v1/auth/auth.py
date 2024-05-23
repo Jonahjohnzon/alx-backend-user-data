@@ -9,22 +9,40 @@ from flask import request
 
 
 class Auth():
-    """Template for authentication system implemented in this app.
+    """Template for all authentication system implemented this app.
     """
 
     def require_auth(self, path: str, excluded_paths: List[str]) -> bool:
-        """This function takes path and a list of excluded paths as arguments
+        """This function takes a path and a list of excluded paths as arguments
         and returns a boolean value.
+
+        Returns True if `path` is None.
+        Returns True if `excluded_paths` is None or empty.
+        Returns False if `path` is in `excluded_paths`.
+        You can assume excluded_paths contains string path always ending by
+        a /. This method must be slash tolerant: path=/api/v1/status,
+        path=/api/v1/status/ must be returned False if excluded_paths contains
+        /api/v1/status/.
+
+        Args:
+            path (str): The path to check against the list of excluded paths.
+            excluded_paths (List[str]): The list of excluded paths.
+
+        Returns:
+            bool: True if  path is not in the excluded paths list,
+            False otherwise.
         """
         # If path is None, return True
         if not path:
             return True
-        # If excluded_paths  None or empty, return True
+        # If excluded_paths is None or empty, return True
         if not excluded_paths:
             return True
         # Remove the trailing slash from the path
         path = path.rstrip("/")
         # Check if path is in excluded_paths and return False if path is
+        # in excluded_paths
+        # Loop through excluded paths
         for excluded_path in excluded_paths:
             # Check if given path starts with excluded path, with * at the end
             if excluded_path.endswith("*") and \
@@ -39,7 +57,13 @@ class Auth():
         return True
 
     def authorization_header(self, request=None) -> str:
-        """Gets the value of the Authorization header from the request
+        """Gets the value of Authorization header from the request
+
+        Args:
+            request (request, optional): Flask request obj. Defaults to None.
+
+        Returns:
+            str: The value of the Authorization header or None if not present.
         """
         # If request is None, return None
         # If request doesn’t contain the header key Authorization, return None
@@ -48,13 +72,23 @@ class Auth():
         return None
 
     def current_user(self, request=None) -> TypeVar('User'):
-        """This function takes request object as an optional argument
-        (defaults to None) and returns a value of type 'User'.
+        """This function takes a request object as an optional argument
+        (defaults to None) and returns a value of type 'User'. The purpose
+        and how request object is used will be determined later.
+        For now, it simply returns None.
         """
         return None
 
     def session_cookie(self, request=None) -> str:
-        """Retrieves the session cookie from a request.
+        """Retrieves session cookie from a request.
+
+        Args:
+            request (flask.request, optional): Request to retrieve the session
+            cookie from. Defaults to None.
+
+        Returns:
+            str: value of the session cookie, None if the request or the
+            cookie is invalid.
         """
         # If request is not None
         if request is not None:
