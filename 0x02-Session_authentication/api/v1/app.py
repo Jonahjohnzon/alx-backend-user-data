@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Route module for the API
+Route module for API
 """
 from os import getenv
 from api.v1.views import app_views
@@ -34,7 +34,7 @@ elif AUTH_TYPE == "session_db_auth":
 @app.before_request
 def bef_req():
     """
-    Filter each request before it's handled by the proper route
+    Filter each request before  handled by  proper route
     """
     if auth is None:
         pass
@@ -56,7 +56,7 @@ def bef_req():
 
 @app.errorhandler(404)
 def not_found(error) -> str:
-    """ Not found handler
+    """ For Not found handler
     """
     return jsonify({"error": "Not found"}), 404
 
