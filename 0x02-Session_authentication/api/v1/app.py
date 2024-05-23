@@ -26,6 +26,7 @@ auth = None
 
 
 # Update api/v1/app.py for using SessionAuth instance for the variable
+# auth depending of the value of the environment variable AUTH_TYPE, If
 auth_type = getenv('AUTH_TYPE', 'default')
 if auth_type == "session_auth":
     auth = SessionAuth()
@@ -49,6 +50,13 @@ def not_found(error) -> str:
 @app.errorhandler(401)
 def unauthorized(error: Exception) -> Tuple[jsonify, int]:
     """Error handler for unauthorized requests.
+
+    Args:
+        error (Exception): error raised.
+
+    Returns:
+        Tuple[jsonify, int]: JSON response with error message and a 401
+        status code.
     """
     return jsonify({"error": "Unauthorized"}), 401
 
@@ -56,6 +64,13 @@ def unauthorized(error: Exception) -> Tuple[jsonify, int]:
 @app.errorhandler(403)
 def forbidden(error: Exception) -> Tuple[jsonify, int]:
     """Error handler for unauthorized requests.
+
+    Args:
+        error (Exception): error raised.
+
+    Returns:
+        Tuple[jsonify, int]: JSON response with error message and a 401
+        status code.
     """
     return jsonify({"error": "Forbidden"}), 403
 
@@ -63,7 +78,7 @@ def forbidden(error: Exception) -> Tuple[jsonify, int]:
 @app.before_request
 def handle_request():
     """
-    Handle  request by checking for authentication and authorization.
+    Handle the request by checking for authentication and authorization.
     """
     # If auth is None, do nothing
     if auth is None:
@@ -74,6 +89,7 @@ def handle_request():
                       '/api/v1/forbidden/',
                       '/api/v1/auth_session/login/']
     # if request.path is not part of the list above, do nothing
+    # You must use the method require_auth from the auth instance
     if not auth.require_auth(request.path, excluded_paths):
         return
     # If auth.authorization_header(request) and auth.session_cookie(request)
@@ -81,7 +97,8 @@ def handle_request():
     session_cookie = auth.session_cookie(request)
     if auth_header is None and session_cookie is None:
         abort(401)
-    # If auth.current_user(request) returns None, raise the error 403
+    # If auth.current_user(request) returns None, raise the error 403 - you
+    # must use abort
     user = auth.current_user(request)
     if user is None:
         abort(403)
