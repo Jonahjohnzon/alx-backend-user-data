@@ -52,22 +52,21 @@ class DB:
         return new_user
 
     def find_user_by(self, **kwargs) -> User:
-        """ Find user by given attribute
+        """Finds a user based on a set of filters.
         """
-
-        attrs, vals = [], []
-        for attr, val in kwargs.items():
-            if not hasattr(User, attr):
+        fields, values = [], []
+        for key, value in kwargs.items():
+            if hasattr(User, key):
+                fields.append(getattr(User, key))
+                values.append(value)
+            else:
                 raise InvalidRequestError()
-            attrs.append(getattr(User, attr))
-            vals.append(val)
-
-        session = self._session
-        query = session.query(User)
-        user = query.filter(tuple_(*attrs).in_([tuple(vals)])).first()
-        if not user:
+        result = self._session.query(User).filter(
+            tuple_(*fields).in_([tuple(values)])
+        ).first()
+        if result is None:
             raise NoResultFound()
-        return user
+        return result
 
     def update_user(self, user_id: int, **kwargs) -> None:
         """Updates user's attributes user ID and arbitrary keyword
