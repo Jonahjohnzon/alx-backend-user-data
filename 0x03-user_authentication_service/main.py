@@ -122,7 +122,7 @@ def log_in(email: str, password: str) -> str:
         "email": email,
         "password": password
     }
-    response = requests.post(url, data=data) 
+    response = requests.post(url, data=data)
     if response.status_code == 401:
         return "Invalid credentials"
     assert response.status_code == 200
